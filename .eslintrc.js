@@ -30,11 +30,11 @@ module.exports = {
     eqeqeq: 'warn',
     'no-nested-ternary': 'warn',
     'no-else-return': 'warn',
-    'spaced-comment': 'warn',
     'no-new-wrappers': 'warn',
     'import/prefer-default-export': 'warn',
     'import/first': 'warn',
     'import/extensions': 'warn',
-    'no-undef': 'warn',
+    'no-undef': 'off',
+    'no-unused-vars': 'off',
   },
 };
