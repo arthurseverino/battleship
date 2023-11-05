@@ -1,16 +1,58 @@
 *,
 *::before,
-*::after{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body{
-    font-family: 'Roboto', sans-serif;
-    font-size: 1.2rem;
-    background-color: #f4f4f4;
+body {
+  font-family: 'Roboto', sans-serif;
+  background: #f4f4f4;
+  height: 100vh;
 }
 
+h1 {
+  text-align: center;
+}
 
+#boardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+  gap: 2rem;
+}
 
+#output {
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid green;
+  height: 4rem;
+  text-align: center;
+}
+
+#playerBoard {
+  display: flex;
+  flex-wrap: wrap;
+  width: 500px;
+  height: 500px;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  background: #fff;
+  cursor: pointer;
+}
+
+.cell:hover {
+  background: #ccc;
+}
+
+.cell.clicked {
+  background: green;
+}

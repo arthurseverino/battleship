@@ -1,25 +1,29 @@
-const { sum, isEquals } = require('./index');
+const { Carrier, Battleship, Cruiser, Submarine, Destroyer } =
+  require('./index').default;
 
-describe('sum function', () => {
-  test('adds 1 + 2 to equal 3', () => {
-    expect(sum(1, 2)).toBe(3);
+describe('Ship classes', () => {
+  test('Carrier should have length 5', () => {
+    const carrier = new Carrier();
+    expect(carrier.length).toBe(5);
   });
 
-  test('adds -1 + 2 to equal 1', () => {
-    expect(sum(-1, 2)).toBe(1);
+  test('Battleship should have length 4', () => {
+    const battleship = new Battleship();
+    expect(battleship.length).toBe(4);
   });
 
-  test('adds -1 + -2 to equal -3', () => {
-    expect(sum(-1, -2)).toBe(-3);
-  });
-});
-
-describe('isEquals function', () => {
-  test('checks if 1 is equal to 1', () => {
-    expect(isEquals(1, 1)).toBe(true);
+  test('Cruiser should have length 3', () => {
+    const cruiser = new Cruiser();
+    expect(cruiser.length).toBe(3);
   });
 
-  test('checks if 1 is not equal to 2', () => {
-    expect(isEquals(1, 2)).toBe(false);
+  test('Submarine should have length 3', () => {
+    const submarine = new Submarine();
+    expect(submarine.length).toBe(3);
+  });
+
+  test('Destroyer should have length 2', () => {
+    const destroyer = new Destroyer();
+    expect(destroyer.length).toBe(2);
   });
 });

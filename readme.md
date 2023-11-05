@@ -1,1 +1,1 @@
-Hi
+Hi, this is my battleship project 
