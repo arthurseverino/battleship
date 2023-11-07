@@ -4,6 +4,7 @@ export class Ship {
   constructor() {
     this.hits = 0;
     this.isSunk = false;
+    this.direction = 'horizontal';
     this.x = 0;
     this.y = 0;
   }

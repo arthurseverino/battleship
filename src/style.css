@@ -46,11 +46,11 @@ h1 {
   height: 50px;
   border: 1px solid #000;
   background: #fff;
-  cursor: pointer;
 }
 
 .cell:hover {
   background: #ccc;
+  cursor: pointer;
 }
 
 .cell.clicked {

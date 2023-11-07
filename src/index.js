@@ -32,15 +32,26 @@ class Gameboard {
     }
   }
   placeShip(x, y, ship) {
-    //place ship on gameboard
+    // check if the ships coordinates would be out of bound
+    const shipCoordinates = [];
+    if (ship.direction === 'horizontal') {
+      for (let i = 0; i < ship.length; i++) {
+        shipCoordinates.push(i + 10, y);
+      }
+    } else {
+      for (let i = 0; i < ship.length; i++) {
+        shipCoordinates.push(x, i + 10);
+      }
+    }
     ship.x = x;
     ship.y = y;
+    return shipCoordinates;
   }
 }
 
 class Player {
   constructor() {
-    this.gameboard = new Gameboard();
+    this.turn = false;
   }
   attack(x, y) {
     this.gameboard.receiveAttack(x, y);
@@ -56,27 +67,33 @@ function createShipArray() {
 }
 
 const cells = document.querySelectorAll('.cell');
-cells.forEach((cell) => {
-  cell.addEventListener('click', () => {
-    cell.classList.add('clicked');
-  });
-});
 
 function initializeGame() {
   createShipArray();
+  const player = new Player();
+  let shipCount = 0;
+
   cells.forEach((cell) => {
     cell.addEventListener('click', () => {
-      cell.classList.add('clicked');
-      for (const ship of shipArray) {
-        placeShip(cell.xvalue, cell.yvalue, ship);
+      placeShip(cell.x, cell.y, shipArray[shipCount]);
+      for (const cell of shipCoordinates) {
+        cell.x = shipCoordinates[0];
+        cell.y = shipCoordinates[1];
       }
+      cell.style.backgroundColor = 'green';
+      shipCount++;
+    });
+
+    cell.addEventListener('mouseover', () => {
+      shipArray[shipCount].x = cell.xvalue;
+      cell.style.backgroundColor = 'green';
     });
   });
+
   /*
-  if (5 ships are placed on board){
+  if (shipCount = 5){
     create enemy board and ships
     let gameboard = new Gameboard();
-    let player = new Player();
     let computer = new Player(); } 
     */
 }

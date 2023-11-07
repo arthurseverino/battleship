@@ -21,7 +21,7 @@ module.exports = {
   },
   rules: {
     'prefer-const': 'warn',
-    'prefer-destructuring': 'warn',
+    'prefer-destructuring': 'off',
     'default-param-last': 'warn',
     'no-useless-constructor': 'warn',
     'no-duplicate-imports': 'warn',
