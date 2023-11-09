@@ -34,7 +34,7 @@ h1 {
   text-align: center;
 }
 
-#playerBoard {
+.playerBoard {
   display: flex;
   flex-wrap: wrap;
   width: 500px;
@@ -48,11 +48,17 @@ h1 {
   background: #fff;
 }
 
+.enemyCell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    background: #fff;
+  }
+
 .cell:hover {
   background: #ccc;
   cursor: pointer;
 }
 
-.cell.clicked {
-  background: green;
-}
+/* #ff9c9c */
+

@@ -26,7 +26,7 @@ module.exports = {
     'no-useless-constructor': 'warn',
     'no-duplicate-imports': 'warn',
     'dot-notation': 'warn',
-    'no-use-before-define': 'warn',
+    'no-use-before-define': 'off',
     eqeqeq: 'warn',
     'no-nested-ternary': 'warn',
     'no-else-return': 'warn',
