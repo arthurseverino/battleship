@@ -1,16 +1,18 @@
 export const shipArray = [];
+export const enemyShipArray = [];
 
 export class Ship {
   constructor() {
+    this.blocks = [];
     this.hits = 0;
     this.isSunk = false;
     this.direction = 'horizontal';
-    this.blocks = [];
   }
   hit() {
-    this.hits += 1;
     if (this.hits === this.length) {
       this.isSunk = true;
+    } else {
+      this.hits += 1;
     }
   }
 }
@@ -63,3 +65,35 @@ export function createShipArray() {
   shipArray.push(new Destroyer());
 }
 
+export function createEnemyShipArray() {
+  const enemyCarrier = new Carrier();
+  enemyCarrier.blocks.push(105, 106, 107, 108, 109);
+
+  const enemyBattleship = new Battleship();
+  enemyBattleship.blocks.push(122, 123, 124, 125);
+
+  const enemyCruiser = new Cruiser();
+  enemyCruiser.blocks.push(184, 185, 186);
+
+  const enemySubmarine = new Submarine();
+  enemySubmarine.blocks.push(145, 146, 147);
+
+  const enemyDestroyer = new Destroyer();
+  enemyDestroyer.blocks.push(161, 162);
+
+  enemyShipArray.push(enemyCarrier);
+  enemyShipArray.push(enemyBattleship);
+  enemyShipArray.push(enemyCruiser);
+  enemyShipArray.push(enemySubmarine);
+  enemyShipArray.push(enemyDestroyer);
+}
+
+function getRandomNumber() {
+  // Generate a random decimal between 0 (inclusive) and 1 (exclusive)
+  const randomDecimal = Math.random();
+
+  // Scale and shift the random decimal to get a number between 100 and 199
+  const randomNumber = Math.floor(randomDecimal * 100) + 100;
+
+  return randomNumber;
+}

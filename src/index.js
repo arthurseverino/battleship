@@ -1,4 +1,11 @@
-import { shipArray, createShipArray } from './ship';
+import {
+  shipArray,
+  createShipArray,
+  createEnemyShipArray,
+  enemyShipArray,
+} from './ship';
+
+//if ship is sunk put a x and make it red / green
 
 const cells = document.querySelectorAll('.cell');
 const boardContainer = document.querySelector('#boardContainer');
@@ -8,16 +15,31 @@ class Player {
   constructor() {
     this.turn = false;
   }
-  attack(x, y) {
-    this.gameboard.receiveAttack(x, y);
-  }
 }
 
 class Gameboard {
   constructor() {
     this.shipCount = 0;
+    this.blocksHit = [];
   }
-  createGameBoardDiv() {}
+
+  switchTurns() {
+    if (player.turn) {
+      computer.turn = true;
+    } else {
+      player.turn = true;
+    }
+  }
+
+  //returns a num between 0 and 99 that has not been hit yet
+  chooseBlock() {
+    let block = Math.floor(Math.random() * 100);
+    while (this.blocksHit.includes(block)) {
+      block = Math.floor(Math.random() * 100);
+    }
+    return block;
+  }
+
   allSunk() {
     let sunk = true;
     for (const ship of shipArray) {
@@ -27,16 +49,41 @@ class Gameboard {
     }
     return sunk;
   }
-  receiveAttack(x, y) {
-    //if the coordinates are the same as the ship coordinates, then hit the ship
-    //if the coordinates are not the same as the ship coordinates, then return coordinates and report a miss
+  receiveAttack(cellNum, shipArray) {
+    //if the ship coordinates contains the same num clicked, then hit the ship
+    //else, miss
     for (const ship of shipArray) {
-      if (ship.x === x && ship.y === y) {
-        ship.hit();
-      } else {
-        //return coordinates of missed attack
-        return x, y;
+      for (const block of ship.blocks) {
+        if (block === cellNum) {
+          ship.hit();
+          if (ship.isSunk) {
+            output.textContent = `You sunk the ${ship.name}!`;
+          } else {
+            output.textContent = `You hit the ${ship.name}!`;
+          }
+        } else {
+          output.textContent = `You missed! Block #${block}`;
+        }
       }
+    }
+    setTimeout(() => {
+      console.log('timeout');
+    }, 1000);
+
+    this.blocksHit.push(cellNum);
+    this.switchTurns();
+    console.log(this.blocksHit);
+
+    if (player.turn) {
+      gameboard.receiveAttack(this.chooseBlock(), shipArray);
+      cells.forEach((cell) => {
+        if (this.blocksHit.includes(Number(cell.id))) {
+          cell.textContent = 'X';
+          cell.style.backgroundColor = 'grey';
+        }
+      });
+    } else {
+      computer.turn = true;
     }
   }
 
@@ -70,40 +117,41 @@ class Gameboard {
 
   placeShip(head, ship) {
     if (ship.direction === 'horizontal') {
-      let tails = head;
-      //check if tempCell is already in another ship's blocks
+      let greenCellNum = head;
+
+      //check if cell is already in another ship's blocks
       for (const ship of shipArray) {
         for (const block of ship.blocks) {
-          if (block === tails) {
-            console.log('invalid click');
-            placeShip(head, ship);
-            // return;
+          if (block === greenCellNum) {
+            output.textContent = 'A Ship is already occupying this space';
+            return;
           }
         }
       }
-
-      const tailsRow = findRow(tails);
-      if (findRow(tails + ship.length) !== tailsRow) {
-        console.log('invalid click');
-        placeShip(head, ship);
-      }
       //check if cell.id + ship.length = another row
+      const shipRow = this.findRow(greenCellNum);
+      if (this.findRow(greenCellNum + ship.length) !== shipRow) {
+        output.textContent = 'Ship is out of bounds';
+        return;
+      }
+
       for (let i = 0; i < ship.length; i++) {
-        ship.blocks.push(tails);
-        tails++;
+        ship.blocks.push(greenCellNum);
+        greenCellNum++;
       }
     } else {
       for (let i = 0; i < ship.length; i++) {
-        ship.blocks.push(tails);
-        tempCell += 10;
+        ship.blocks.push(greenCellNum);
+        greenCellNum += 10;
       }
     }
 
     if (ship.name === 'Destroyer') {
       buildEnemyBoard();
     }
+
     cells.forEach((cell) => {
-      //AND no other ship is occupying that space AND its not out of bounds
+      //if the ships blocks contains the number that was clicked
       if (shipArray[this.shipCount].blocks.includes(Number(cell.id))) {
         cell.style.backgroundColor = '#9fff9c';
       }
@@ -112,26 +160,25 @@ class Gameboard {
   }
 }
 
-function updateDisplay() {
-  if (gameboard.allSunk()) {
-    output.textContent = 'You win!';
-  } else {
-    output.textContent = 'You lose!';
-  }
-}
-
 const player = new Player();
+const gameboard = new Gameboard();
+const enemyGameBoard = new Gameboard();
+const computer = new Player();
 
 function initializeGame() {
   createShipArray();
-  const gameboard = new Gameboard();
   cells.forEach((cell) => {
     cell.addEventListener('click', () => {
       if (gameboard.shipCount < 5) {
         gameboard.placeShip(Number(cell.id), shipArray[gameboard.shipCount]);
-        output.textContent = `Place your ${
-          shipArray[gameboard.shipCount].name
-        }`;
+        output.textContent = `Place your ships. ${
+          5 - gameboard.shipCount
+        } remaining`;
+      }
+      if (gameboard.shipCount === 5) {
+        output.textContent =
+          'All ships placed! Click on the enemy board to attack!! ';
+        player.turn = true;
       }
     });
   });
@@ -140,27 +187,45 @@ function initializeGame() {
 initializeGame();
 
 function buildEnemyBoard() {
-  // create enemy board and ships
-  const enemyShipArray = [];
-  const enemyBoard = document.createElement('div');
-  const enemyGameboard = new Gameboard();
-  const computer = new Player();
+  createEnemyShipArray();
+  for (const ship of enemyShipArray) {
+    console.log(ship);
+  }
 
-  // the last cell.id is 199
+  const enemyBoardDiv = document.createElement('div');
+
   for (let i = 100; i < 200; i++) {
-    //the above function selecting these cells?
     const enemyCell = document.createElement('div');
     enemyCell.classList.add('enemyCell');
     enemyCell.setAttribute('id', i);
-    enemyBoard.appendChild(enemyCell);
+    enemyBoardDiv.appendChild(enemyCell);
     enemyCell.addEventListener('click', () => {
-      console.log('clicked on enemy cell: ' + enemyCell.id);
-      enemyCell.styke.backgroundColor = '#ff9c9c';
-      // player.attack(enemyCell.id);
+      player.turn = true;
+      enemyGameBoard.receiveAttack(i, enemyShipArray);
+      if (enemyGameBoard.blocksHit.includes(i)) {
+        enemyCell.style.backgroundColor = 'grey';
+        enemyCell.textContent = 'X';
+      }
     });
+
+    //the below is just to check if the enemy ships are being placed correctly
+    for (const ship of enemyShipArray) {
+      if (ship.blocks.includes(i)) {
+        enemyCell.style.backgroundColor = '#ff9c9c';
+      }
+    }
   }
-  enemyBoard.classList.add('playerBoard');
-  boardContainer.appendChild(enemyBoard);
+
+  enemyBoardDiv.classList.add('playerBoard');
+  boardContainer.appendChild(enemyBoardDiv);
+}
+
+function updateDisplay() {
+  if (gameboard.allSunk()) {
+    output.textContent = 'You win!';
+  } else {
+    output.textContent = 'You lose!';
+  }
 }
 
 /*
