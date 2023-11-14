@@ -5,15 +5,15 @@ import {
   enemyShipArray,
 } from './ship';
 
-//if ship is sunk put a x and make it red / green
-
 const cells = document.querySelectorAll('.cell');
 const boardContainer = document.querySelector('#boardContainer');
 const output = document.querySelector('#output');
 
-class Player {
-  constructor() {
-    this.turn = false;
+function updateDisplay(board) {
+  if (board.allSunk()) {
+    output.textContent = 'You win!';
+  } else {
+    output.textContent = 'You lose!';
   }
 }
 
@@ -21,14 +21,6 @@ class Gameboard {
   constructor() {
     this.shipCount = 0;
     this.blocksHit = [];
-  }
-
-  switchTurns() {
-    if (player.turn) {
-      computer.turn = true;
-    } else {
-      player.turn = true;
-    }
   }
 
   //returns a num between 0 and 99 that has not been hit yet
@@ -49,42 +41,64 @@ class Gameboard {
     }
     return sunk;
   }
-  receiveAttack(cellNum, shipArray) {
+
+  playRound(cellNum) {
+    console.log('starting playRound()');
     //if the ship coordinates contains the same num clicked, then hit the ship
     //else, miss
-    for (const ship of shipArray) {
+
+    //attack computer board
+    for (const ship of enemyShipArray) {
       for (const block of ship.blocks) {
         if (block === cellNum) {
-          ship.hit();
           if (ship.isSunk) {
-            output.textContent = `You sunk the ${ship.name}!`;
+            output.textContent = `Player sunk the ${ship.name}!`;
           } else {
-            output.textContent = `You hit the ${ship.name}!`;
+            ship.hit();
+            output.textContent = `Player hit the ${ship.name}!`;
           }
         } else {
-          output.textContent = `You missed! Block #${block}`;
+          console.log(
+            'block: ' +
+              block +
+              'CellNum: ' +
+              cellNum +
+              ' These better not be equal'
+          );
+          output.textContent = `Player missed! Block #${cellNum}`;
         }
       }
     }
+
+    enemyGameBoard.blocksHit.push(cellNum);
+    console.log('Now AI turn...');
+
     setTimeout(() => {
-      console.log('timeout');
-    }, 1000);
+      //then the ai attacks player board
+      const randomNum = gameboard.chooseBlock();
+      for (const ship of shipArray) {
+        for (const block of ship.blocks) {
+          if (block === randomNum) {
+            if (ship.isSunk) {
+              output.textContent = `Computer sunk the ${ship.name}!`;
+            } else {
+              ship.hit();
+              output.textContent = `Computer hit the ${ship.name}!`;
+            }
+          } else {
+            output.textContent = `Computer missed! Block #${randomNum}`;
+          }
+        }
+      }
+      gameboard.blocksHit.push(randomNum);
 
-    this.blocksHit.push(cellNum);
-    this.switchTurns();
-    console.log(this.blocksHit);
-
-    if (player.turn) {
-      gameboard.receiveAttack(this.chooseBlock(), shipArray);
       cells.forEach((cell) => {
-        if (this.blocksHit.includes(Number(cell.id))) {
+        if (gameboard.blocksHit.includes(Number(cell.id))) {
           cell.textContent = 'X';
-          cell.style.backgroundColor = 'grey';
+          cell.style.backgroundColor = 'green';
         }
       });
-    } else {
-      computer.turn = true;
-    }
+    }, 1500);
   }
 
   findRow(head) {
@@ -160,10 +174,8 @@ class Gameboard {
   }
 }
 
-const player = new Player();
 const gameboard = new Gameboard();
 const enemyGameBoard = new Gameboard();
-const computer = new Player();
 
 function initializeGame() {
   createShipArray();
@@ -178,7 +190,7 @@ function initializeGame() {
       if (gameboard.shipCount === 5) {
         output.textContent =
           'All ships placed! Click on the enemy board to attack!! ';
-        player.turn = true;
+        gameboard.shipCount++;
       }
     });
   });
@@ -188,10 +200,6 @@ initializeGame();
 
 function buildEnemyBoard() {
   createEnemyShipArray();
-  for (const ship of enemyShipArray) {
-    console.log(ship);
-  }
-
   const enemyBoardDiv = document.createElement('div');
 
   for (let i = 100; i < 200; i++) {
@@ -200,10 +208,9 @@ function buildEnemyBoard() {
     enemyCell.setAttribute('id', i);
     enemyBoardDiv.appendChild(enemyCell);
     enemyCell.addEventListener('click', () => {
-      player.turn = true;
-      enemyGameBoard.receiveAttack(i, enemyShipArray);
+      enemyGameBoard.playRound(i);
       if (enemyGameBoard.blocksHit.includes(i)) {
-        enemyCell.style.backgroundColor = 'grey';
+        enemyCell.style.backgroundColor = 'red';
         enemyCell.textContent = 'X';
       }
     });
@@ -218,14 +225,6 @@ function buildEnemyBoard() {
 
   enemyBoardDiv.classList.add('playerBoard');
   boardContainer.appendChild(enemyBoardDiv);
-}
-
-function updateDisplay() {
-  if (gameboard.allSunk()) {
-    output.textContent = 'You win!';
-  } else {
-    output.textContent = 'You lose!';
-  }
 }
 
 /*
