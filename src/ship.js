@@ -9,10 +9,9 @@ export class Ship {
     this.direction = 'horizontal';
   }
   hit() {
+    this.hits += 1;
     if (this.hits === this.length) {
       this.isSunk = true;
-    } else {
-      this.hits += 1;
     }
   }
 }

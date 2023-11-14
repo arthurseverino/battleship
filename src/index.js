@@ -9,14 +9,6 @@ const cells = document.querySelectorAll('.cell');
 const boardContainer = document.querySelector('#boardContainer');
 const output = document.querySelector('#output');
 
-function updateDisplay(board) {
-  if (board.allSunk()) {
-    output.textContent = 'You win!';
-  } else {
-    output.textContent = 'You lose!';
-  }
-}
-
 class Gameboard {
   constructor() {
     this.shipCount = 0;
@@ -33,72 +25,58 @@ class Gameboard {
   }
 
   allSunk() {
-    let sunk = true;
-    for (const ship of shipArray) {
-      if (ship.isSunk === false) {
-        sunk = false;
-      }
+    for (const ship of enemyShipArray) {
+      if (!ship.isSunk) return false;
     }
-    return sunk;
+    return true;
   }
 
-  playRound(cellNum) {
-    console.log('starting playRound()');
-    //if the ship coordinates contains the same num clicked, then hit the ship
-    //else, miss
-
-    //attack computer board
+  attackComputer(cellNum) {
+    //first, attack computer board
+    let hit = false;
     for (const ship of enemyShipArray) {
-      for (const block of ship.blocks) {
-        if (block === cellNum) {
-          if (ship.isSunk) {
-            output.textContent = `Player sunk the ${ship.name}!`;
-          } else {
-            ship.hit();
-            output.textContent = `Player hit the ${ship.name}!`;
-          }
-        } else {
-          console.log(
-            'block: ' +
-              block +
-              'CellNum: ' +
-              cellNum +
-              ' These better not be equal'
-          );
-          output.textContent = `Player missed! Block #${cellNum}`;
-        }
+      if (ship.blocks.includes(cellNum)) {
+        ship.hit();
+        output.textContent = ship.isSunk
+          ? `Player sunk the ${ship.name}!`
+          : `Player hit the ${ship.name} at ${cellNum}!`;
+        hit = true;
+        break;
+      }
+      if (!hit) {
+        output.textContent = `Player missed! Block #${cellNum}`;
       }
     }
-
     enemyGameBoard.blocksHit.push(cellNum);
-    console.log('Now AI turn...');
+    return hit;
+  }
 
+  computerRetaliate() {
+    let hit2 = false;
     setTimeout(() => {
       //then the ai attacks player board
       const randomNum = gameboard.chooseBlock();
+      // Get the cell that the computer attacked
+      const attackedCell = cells[randomNum];
       for (const ship of shipArray) {
-        for (const block of ship.blocks) {
-          if (block === randomNum) {
-            if (ship.isSunk) {
-              output.textContent = `Computer sunk the ${ship.name}!`;
-            } else {
-              ship.hit();
-              output.textContent = `Computer hit the ${ship.name}!`;
-            }
-          } else {
-            output.textContent = `Computer missed! Block #${randomNum}`;
-          }
+        if (ship.blocks.includes(randomNum)) {
+          ship.hit();
+          output.textContent = ship.isSunk
+            ? `Computer sunk the ${ship.name}!`
+            : `Computer hit the ${ship.name} at ${randomNum}!`;
+          hit2 = true;
+          attackedCell.textContent = 'X';
+          attackedCell.style.backgroundColor = 'green';
+          break;
+        }
+        if (!hit2) {
+          output.textContent = `Computer missed! Block #${randomNum}`;
+          attackedCell.style.backgroundColor = 'cyan';
         }
       }
       gameboard.blocksHit.push(randomNum);
-
-      cells.forEach((cell) => {
-        if (gameboard.blocksHit.includes(Number(cell.id))) {
-          cell.textContent = 'X';
-          cell.style.backgroundColor = 'green';
-        }
-      });
-    }, 1500);
+      return hit2;
+    }, 1000);
   }
 
   findRow(head) {
@@ -208,21 +186,21 @@ function buildEnemyBoard() {
     enemyCell.setAttribute('id', i);
     enemyBoardDiv.appendChild(enemyCell);
     enemyCell.addEventListener('click', () => {
-      enemyGameBoard.playRound(i);
-      if (enemyGameBoard.blocksHit.includes(i)) {
+      const isHit = enemyGameBoard.attackComputer(i);
+      enemyGameBoard.computerRetaliate();
+      if (isHit) {
         enemyCell.style.backgroundColor = 'red';
         enemyCell.textContent = 'X';
+      } else {
+        enemyCell.style.backgroundColor = 'cyan';
+      }
+
+      if (enemyGameBoard.allSunk()) {
+        output.textContent = 'You win!';
+        return;
       }
     });
-
-    //the below is just to check if the enemy ships are being placed correctly
-    for (const ship of enemyShipArray) {
-      if (ship.blocks.includes(i)) {
-        enemyCell.style.backgroundColor = '#ff9c9c';
-      }
-    }
   }
-
   enemyBoardDiv.classList.add('playerBoard');
   boardContainer.appendChild(enemyBoardDiv);
 }
