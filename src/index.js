@@ -54,7 +54,7 @@ class Gameboard {
   computerRetaliate() {
     let hit2 = false;
     setTimeout(() => {
-      //then the ai attacks player board
+      //then the ai attacks player board after 1 second
       const randomNum = gameboard.chooseBlock();
       // Get the cell that the computer attacked
       const attackedCell = cells[randomNum];
