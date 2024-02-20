@@ -2,6 +2,8 @@
 
 This is an implementation of the classic Battleship game. It's built with JavaScript, HTML, and CSS.
 
+![Screenshot of Battleship Game](./src/Battleship.png)
+
 ## Overview
 
 In this game, you play against the computer. Each player has a fleet of ships and the objective of the game is to destroy the opponent's fleet.
