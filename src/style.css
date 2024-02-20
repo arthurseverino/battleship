@@ -10,6 +10,7 @@ body {
   font-family: 'Roboto', sans-serif;
   background: #f4f4f4;
   height: 100vh;
+  background: linear-gradient( lavender, lightblue);
 }
 
 h1 {
@@ -26,10 +27,14 @@ h1 {
 
 #output {
   font-weight: 700;
+  font-size: 1.5rem;
+  padding: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 3px solid green;
+  background: green;
+  color: white;
   height: 4rem;
   text-align: center;
 }

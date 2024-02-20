@@ -13,8 +13,9 @@ You need  <script src = "bundle.js" defer></script> in the html file, without it
 It works the same as using HTMLWebpackPlugin but doesn't make a new index.html file in dist .
 */
 
-const path = require('path');
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const path = require('path');
 
 module.exports = {
   mode: 'development',
