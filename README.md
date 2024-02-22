@@ -42,14 +42,7 @@ This project uses Jest for testing. To run the tests, use the following command:
 - Add multiplayer support
 - Add support for vertical ship placement 
 
-## License
-
-This project is licensed under the MIT License.
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## Acknowledgments
-
-- This project was inspired by the classic Battleship game.
